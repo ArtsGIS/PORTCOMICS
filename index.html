@@ -1,0 +1,12 @@
+<div style="position:relative;width:100%;height:100%;">
+  <img id="carousel" src="https://arcg.is/1H0yva2" style="width:100%;height:100%;object-fit:cover;">
+  <button onclick="prev()" style="position:absolute;left:10px;top:50%">←</button>
+  <button onclick="next()" style="position:absolute;right:10px;top:50%">→</button>
+</div>
+
+<script>
+  let images = ["https://arcg.is/1H0yva2", "https://arcg.is/1OfTnX1", "https://arcg.is/10fG4D1"];
+  let i = 0;
+  function next(){ i=(i+1)%images.length; document.getElementById('carousel').src=images[i]; }
+  function prev(){ i=(i-1+images.length)%images.length; document.getElementById('carousel').src=images[i]; }
+</script>
