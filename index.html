@@ -1,12 +1,70 @@
-<div style="position:relative;width:100%;height:100%;">
-  <img id="carousel" src="https://artsgis.maps.arcgis.com/sharing/rest/content/items/db937b4788c64139be20030b4c4f6e5c/data" style="width:100%;height:100%;object-fit:cover;">
-  <button onclick="prev()" style="position:absolute;left:10px;top:50%">←</button>
-  <button onclick="next()" style="position:absolute;right:10px;top:50%">→</button>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Carrousel</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    #container {
+      position: relative;
+      width: 100%;
+      height: 100vh;          /* hauteur pleine */
+      background: #111;
+    }
+    #carousel {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      font-size: 28px;
+      padding: 12px 18px;
+      cursor: pointer;
+      border-radius: 4px;
+      z-index: 10;
+    }
+    button:hover {
+      background: rgba(0,0,0,0.8);
+    }
+    #prev { left: 15px; }
+    #next { right: 15px; }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <img id="carousel" src="https://artsgis.maps.arcgis.com/sharing/rest/content/items/db937b4788c64139be20030b4c4f6e5c/data" alt="Image">
+    <button id="prev" onclick="prev()">←</button>
+    <button id="next" onclick="next()">→</button>
+  </div>
 
-<script>
-  let images = ["https://artsgis.maps.arcgis.com/sharing/rest/content/items/db937b4788c64139be20030b4c4f6e5c/data", "https://artsgis.maps.arcgis.com/sharing/rest/content/items/8030d760d50d45038970df08479f4543/data", "https://artsgis.maps.arcgis.com/sharing/rest/content/items/4d83832b0ba14b54be93ad22d4e1841c/data"];
-  let i = 0;
-  function next(){ i=(i+1)%images.length; document.getElementById('carousel').src=images[i]; }
-  function prev(){ i=(i-1+images.length)%images.length; document.getElementById('carousel').src=images[i]; }
-</script>
+  <script>
+    const images = [
+      "https://artsgis.maps.arcgis.com/sharing/rest/content/items/db937b4788c64139be20030b4c4f6e5c/data",
+      "https://artsgis.maps.arcgis.com/sharing/rest/content/items/8030d760d50d45038970df08479f4543/data",
+      "https://artsgis.maps.arcgis.com/sharing/rest/content/items/4d83832b0ba14b54be93ad22d4e1841c/data"
+    ];
+    let i = 0;
+
+    function next() {
+      i = (i + 1) % images.length;
+      document.getElementById('carousel').src = images[i];
+    }
+    function prev() {
+      i = (i - 1 + images.length) % images.length;
+      document.getElementById('carousel').src = images[i];
+    }
+  </script>
+</body>
+</html>
