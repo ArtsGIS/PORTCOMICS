@@ -1,11 +1,11 @@
 <div style="position:relative;width:100%;height:100%;">
-  <img id="carousel" src="https://arcg.is/1H0yva2" style="width:100%;height:100%;object-fit:cover;">
+  <img id="carousel" src="https://artsgis.maps.arcgis.com/sharing/rest/content/items/db937b4788c64139be20030b4c4f6e5c/data" style="width:100%;height:100%;object-fit:cover;">
   <button onclick="prev()" style="position:absolute;left:10px;top:50%">←</button>
   <button onclick="next()" style="position:absolute;right:10px;top:50%">→</button>
 </div>
 
 <script>
-  let images = ["https://arcg.is/1H0yva2", "https://arcg.is/1OfTnX1", "https://arcg.is/10fG4D1"];
+  let images = ["https://artsgis.maps.arcgis.com/sharing/rest/content/items/db937b4788c64139be20030b4c4f6e5c/data", "https://artsgis.maps.arcgis.com/sharing/rest/content/items/8030d760d50d45038970df08479f4543/data", "https://artsgis.maps.arcgis.com/sharing/rest/content/items/4d83832b0ba14b54be93ad22d4e1841c/data"];
   let i = 0;
   function next(){ i=(i+1)%images.length; document.getElementById('carousel').src=images[i]; }
   function prev(){ i=(i-1+images.length)%images.length; document.getElementById('carousel').src=images[i]; }
