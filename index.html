@@ -23,9 +23,18 @@
       width: 100%;
       height: 100vh;
       display: flex;
+      flex-direction: column;
+      background: #0f0f0f;
+    }
+
+    /* Zone de l'image */
+    #image-wrapper {
+      flex: 1;
+      display: flex;
       align-items: center;
       justify-content: center;
-      background: #0f0f0f;
+      position: relative;
+      overflow: hidden;
     }
 
     #carousel {
@@ -34,7 +43,7 @@
       object-fit: contain;
       display: block;
       opacity: 1;
-      transition: opacity 0.45s ease;
+      transition: opacity 0.4s ease;
     }
 
     #carousel.fade-out {
@@ -46,8 +55,8 @@
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 54px;
-      height: 54px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
       background: rgba(0, 0, 0, 0.55);
       border: 2px solid rgba(255, 255, 255, 0.7);
@@ -73,23 +82,34 @@
     #prev { left: 18px; }
     #next { right: 18px; }
 
-    /* Indicateurs (points) */
+    /* Zone légende + points */
+    #bottom-bar {
+      background: rgba(0, 0, 0, 0.75);
+      padding: 14px 20px 16px;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #caption {
+      color: white;
+      font-size: 15px;
+      line-height: 1.4;
+      margin-bottom: 12px;
+      min-height: 20px;
+    }
+
     #dots {
-      position: absolute;
-      bottom: 22px;
-      left: 50%;
-      transform: translateX(-50%);
       display: flex;
-      gap: 10px;
-      z-index: 20;
+      justify-content: center;
+      gap: 9px;
     }
 
     .dot {
-      width: 11px;
-      height: 11px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.35);
-      border: 1.5px solid rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.3);
+      border: 1.5px solid rgba(255, 255, 255, 0.5);
       cursor: pointer;
       transition: all 0.25s ease;
     }
@@ -97,19 +117,19 @@
     .dot.active {
       background: white;
       transform: scale(1.25);
-      box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
     }
 
     /* Compteur */
     #counter {
       position: absolute;
-      top: 18px;
-      right: 20px;
+      top: 16px;
+      right: 18px;
       background: rgba(0, 0, 0, 0.55);
       color: white;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
-      padding: 6px 12px;
+      padding: 5px 11px;
       border-radius: 20px;
       backdrop-filter: blur(4px);
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -120,29 +140,45 @@
 <body>
 
   <div id="container">
-    <img id="carousel" src="https://artsgis.maps.arcgis.com/sharing/rest/content/items/db937b4788c64139be20030b4c4f6e5c/data" alt="Image du carrousel">
+    <div id="image-wrapper">
+      <img id="carousel" src="" alt="Image du carrousel">
+      <button class="nav-btn" id="prev" onclick="changeSlide(-1)">‹</button>
+      <button class="nav-btn" id="next" onclick="changeSlide(1)">›</button>
+      <div id="counter"></div>
+    </div>
 
-    <button class="nav-btn" id="prev" onclick="changeSlide(-1)">‹</button>
-    <button class="nav-btn" id="next" onclick="changeSlide(1)">›</button>
-
-    <div id="dots"></div>
-    <div id="counter"></div>
+    <div id="bottom-bar">
+      <div id="caption"></div>
+      <div id="dots"></div>
+    </div>
   </div>
 
   <script>
-    const images = [
-      "https://artsgis.maps.arcgis.com/sharing/rest/content/items/db937b4788c64139be20030b4c4f6e5c/data",
-      "https://artsgis.maps.arcgis.com/sharing/rest/content/items/8030d760d50d45038970df08479f4543/data",
-      "https://artsgis.maps.arcgis.com/sharing/rest/content/items/4d83832b0ba14b54be93ad22d4e1841c/data"
+    // ========== MODIFIE ICI TES IMAGES + LÉGENDES ==========
+    const slides = [
+      {
+        image: "https://artsgis.maps.arcgis.com/sharing/rest/content/items/db937b4788c64139be20030b4c4f6e5c/data",
+        caption: "Légende de la première image"
+      },
+      {
+        image: "https://artsgis.maps.arcgis.com/sharing/rest/content/items/8030d760d50d45038970df08479f4543/data",
+        caption: "Légende de la deuxième image"
+      },
+      {
+        image: "https://artsgis.maps.arcgis.com/sharing/rest/content/items/4d83832b0ba14b54be93ad22d4e1841c/data",
+        caption: "Légende de la troisième image"
+      }
     ];
+    // =======================================================
 
     let current = 0;
     const img = document.getElementById('carousel');
+    const caption = document.getElementById('caption');
     const dotsContainer = document.getElementById('dots');
     const counter = document.getElementById('counter');
 
     // Création des points
-    images.forEach((_, index) => {
+    slides.forEach((_, index) => {
       const dot = document.createElement('div');
       dot.classList.add('dot');
       if (index === 0) dot.classList.add('active');
@@ -151,24 +187,24 @@
     });
 
     function updateUI() {
-      // Mise à jour des points
+      img.src = slides[current].image;
+      caption.textContent = slides[current].caption;
+
       document.querySelectorAll('.dot').forEach((dot, i) => {
         dot.classList.toggle('active', i === current);
       });
 
-      // Mise à jour du compteur
-      counter.textContent = `${current + 1} / ${images.length}`;
+      counter.textContent = `${current + 1} / ${slides.length}`;
     }
 
     function changeSlide(direction) {
       img.classList.add('fade-out');
 
       setTimeout(() => {
-        current = (current + direction + images.length) % images.length;
-        img.src = images[current];
-        img.classList.remove('fade-out');
+        current = (current + direction + slides.length) % slides.length;
         updateUI();
-      }, 220);
+        img.classList.remove('fade-out');
+      }, 200);
     }
 
     function goToSlide(index) {
@@ -177,10 +213,9 @@
 
       setTimeout(() => {
         current = index;
-        img.src = images[current];
-        img.classList.remove('fade-out');
         updateUI();
-      }, 220);
+        img.classList.remove('fade-out');
+      }, 200);
     }
 
     // Navigation clavier
