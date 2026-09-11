@@ -31,13 +31,14 @@
     }
 
     #image-wrapper {
-      flex: 1;
+      flex: 1 1 auto;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
       overflow: hidden;
       min-height: 0;
+      min-width: 0;
     }
 
     #carousel {
@@ -90,19 +91,20 @@
       right: 0;
       bottom: 0;
       z-index: 15;
-      background: linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.78) 55%, rgba(0,0,0,0) 100%);
-      padding: 28px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.78) 55%, rgba(0, 0, 0, 0) 100%);
+      padding: 36px 24px calc(14px + env(safe-area-inset-bottom, 0px));
       text-align: center;
     }
 
     #caption {
       color: white;
-      font-size: clamp(16px, 2.2vw + 0.7vh, 22px);
+      font-size: clamp(22px, 1.6vw + 1.1vh, 32px);
       line-height: 1.35;
-      margin: 0 auto 10px;
+      margin: 0 auto 12px;
       font-weight: 500;
-      text-shadow: 0 1px 2px rgba(0,0,0,.8);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
       max-width: 62ch;
+      overflow-wrap: anywhere;
     }
 
     #dots {
@@ -119,6 +121,7 @@
       border: 1.5px solid rgba(255, 255, 255, 0.5);
       cursor: pointer;
       transition: all 0.25s ease;
+      flex-shrink: 0;
     }
 
     .dot.active {
@@ -143,21 +146,94 @@
     }
 
     @media (max-width: 720px), (max-height: 640px) {
+      #bottom-bar {
+        position: static;
+        flex: 0 0 auto;
+        background: rgba(0, 0, 0, 0.92);
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+      }
+
+      #caption {
+        font-size: clamp(14px, 3.4vw, 17px);
+        line-height: 1.35;
+        margin: 0 auto 8px;
+        text-shadow: none;
+      }
+
+      #dots {
+        position: static;
+        transform: none;
+        top: auto;
+        left: auto;
+        gap: 11px;
+        padding: 0;
+        background: none;
+        border: none;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+      }
+
       .nav-btn {
         width: 40px;
         height: 40px;
         font-size: 22px;
       }
+
       #prev { left: 8px; }
       #next { right: 8px; }
-      #caption { font-size: clamp(15px, 3.6vw, 19px); }
-      #bottom-bar {
-        padding: 22px 12px calc(10px + env(safe-area-inset-bottom, 0px));
-      }
+
       #counter {
         top: 8px;
         right: 8px;
         font-size: 12px;
+      }
+    }
+
+    @media (orientation: landscape) and (max-height: 640px) {
+      #container {
+        flex-direction: row;
+      }
+
+      #image-wrapper {
+        flex: 1 1 62%;
+      }
+
+      #bottom-bar {
+        position: static;
+        flex: 0 0 38%;
+        max-width: 320px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
+        gap: 12px;
+        background: rgba(0, 0, 0, 0.92);
+        padding: 12px 14px;
+        text-align: left;
+      }
+
+      #caption {
+        font-size: clamp(13px, 2.4vh, 16px);
+        margin: 0;
+        max-height: calc(100% - 36px);
+        overflow-y: auto;
+        text-align: left;
+      }
+
+      #dots {
+        position: static;
+        transform: none;
+        justify-content: flex-start;
+      }
+
+      .nav-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
       }
     }
   </style>
@@ -219,18 +295,18 @@
       window.visualViewport.addEventListener('resize', fitViewport);
     }
 
-    slides.forEach((_, index) => {
+    slides.forEach(function (_, index) {
       const dot = document.createElement('div');
       dot.classList.add('dot');
       if (index === 0) dot.classList.add('active');
-      dot.addEventListener('click', () => goToSlide(index));
+      dot.addEventListener('click', function () { goToSlide(index); });
       dotsContainer.appendChild(dot);
     });
 
     function updateUI() {
       img.src = slides[current].image;
       caption.textContent = slides[current].caption;
-      document.querySelectorAll('.dot').forEach((dot, i) => {
+      document.querySelectorAll('.dot').forEach(function (dot, i) {
         dot.classList.toggle('active', i === current);
       });
       counter.textContent = (current + 1) + ' / ' + slides.length;
@@ -259,6 +335,15 @@
       if (e.key === 'ArrowLeft') changeSlide(-1);
       if (e.key === 'ArrowRight') changeSlide(1);
     });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', function (e) {
+      touchStartX = e.changedTouches[0].clientX;
+    }, { passive: true });
+    document.addEventListener('touchend', function (e) {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) changeSlide(dx < 0 ? 1 : -1);
+    }, { passive: true });
 
     updateUI();
   </script>
