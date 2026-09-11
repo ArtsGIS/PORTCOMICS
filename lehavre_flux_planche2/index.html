@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Carrousel</title>
   <style>
     * {
@@ -11,8 +11,9 @@
       box-sizing: border-box;
     }
 
-    body, html {
+    html, body {
       height: 100%;
+      height: 100dvh;
       background: #0f0f0f;
       font-family: system-ui, -apple-system, sans-serif;
       overflow: hidden;
@@ -21,13 +22,14 @@
     #container {
       position: relative;
       width: 100%;
-      height: 100vh;
+      height: 100%;
+      height: 100dvh;
+      height: var(--app-h, 100dvh);
       display: flex;
       flex-direction: column;
       background: #0f0f0f;
     }
 
-    /* Zone de l'image */
     #image-wrapper {
       flex: 1;
       display: flex;
@@ -35,6 +37,7 @@
       justify-content: center;
       position: relative;
       overflow: hidden;
+      min-height: 0;
     }
 
     #carousel {
@@ -50,7 +53,6 @@
       opacity: 0;
     }
 
-    /* Flèches de navigation */
     .nav-btn {
       position: absolute;
       top: 50%;
@@ -82,20 +84,25 @@
     #prev { left: 18px; }
     #next { right: 18px; }
 
-    /* Zone légende + points */
     #bottom-bar {
-      background: rgba(0, 0, 0, 0.75);
-      padding: 14px 20px 16px;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 15;
+      background: linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.78) 55%, rgba(0,0,0,0) 100%);
+      padding: 28px 16px calc(12px + env(safe-area-inset-bottom, 0px));
       text-align: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     #caption {
       color: white;
-      font-size: 15px;
-      line-height: 1.4;
-      margin-bottom: 12px;
-      min-height: 20px;
+      font-size: clamp(16px, 2.2vw + 0.7vh, 22px);
+      line-height: 1.35;
+      margin: 0 auto 10px;
+      font-weight: 500;
+      text-shadow: 0 1px 2px rgba(0,0,0,.8);
+      max-width: 62ch;
     }
 
     #dots {
@@ -120,7 +127,6 @@
       box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
     }
 
-    /* Compteur */
     #counter {
       position: absolute;
       top: 16px;
@@ -135,10 +141,28 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
       z-index: 20;
     }
+
+    @media (max-width: 720px), (max-height: 640px) {
+      .nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 22px;
+      }
+      #prev { left: 8px; }
+      #next { right: 8px; }
+      #caption { font-size: clamp(15px, 3.6vw, 19px); }
+      #bottom-bar {
+        padding: 22px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+      }
+      #counter {
+        top: 8px;
+        right: 8px;
+        font-size: 12px;
+      }
+    }
   </style>
 </head>
 <body>
-
   <div id="container">
     <div id="image-wrapper">
       <img id="carousel" src="" alt="Image du carrousel">
@@ -154,7 +178,6 @@
   </div>
 
   <script>
-    // ========== MODIFIE ICI TES IMAGES + LÉGENDES ==========
     const slides = [
       {
         image: "https://artsgis.maps.arcgis.com/sharing/rest/content/items/daa322c1306b411dad09fac396f64924/data",
@@ -162,7 +185,7 @@
       },
       {
         image: "https://artsgis.maps.arcgis.com/sharing/rest/content/items/39da55dc39204747a56db4c4ada65e38/data",
-        caption: "Le badge vaut plus que le slot. High-value : voir *qui* passe, pas seulement *ce* qui passe. "
+        caption: "Le badge vaut plus que le slot. High-value : voir *qui* passe, pas seulement *ce* qui passe."
       },
       {
         image: "https://artsgis.maps.arcgis.com/sharing/rest/content/items/0d6c6f4187de4d80ae83d5413aefff2d/data",
@@ -177,7 +200,6 @@
         caption: "On le retrouvera le long du fer, pas le long de sa route. Le cadrage dit « assassiné ? ». Le corridor n’a pas de PV."
       }
     ];
-    // =======================================================
 
     let current = 0;
     const img = document.getElementById('carousel');
@@ -185,7 +207,18 @@
     const dotsContainer = document.getElementById('dots');
     const counter = document.getElementById('counter');
 
-    // Création des points
+    function fitViewport() {
+      const h = (window.visualViewport && window.visualViewport.height)
+        ? window.visualViewport.height
+        : window.innerHeight;
+      document.documentElement.style.setProperty('--app-h', h + 'px');
+    }
+    fitViewport();
+    window.addEventListener('resize', fitViewport);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', fitViewport);
+    }
+
     slides.forEach((_, index) => {
       const dot = document.createElement('div');
       dot.classList.add('dot');
@@ -197,18 +230,15 @@
     function updateUI() {
       img.src = slides[current].image;
       caption.textContent = slides[current].caption;
-
       document.querySelectorAll('.dot').forEach((dot, i) => {
         dot.classList.toggle('active', i === current);
       });
-
-      counter.textContent = `${current + 1} / ${slides.length}`;
+      counter.textContent = (current + 1) + ' / ' + slides.length;
     }
 
     function changeSlide(direction) {
       img.classList.add('fade-out');
-
-      setTimeout(() => {
+      setTimeout(function () {
         current = (current + direction + slides.length) % slides.length;
         updateUI();
         img.classList.remove('fade-out');
@@ -218,21 +248,18 @@
     function goToSlide(index) {
       if (index === current) return;
       img.classList.add('fade-out');
-
-      setTimeout(() => {
+      setTimeout(function () {
         current = index;
         updateUI();
         img.classList.remove('fade-out');
       }, 200);
     }
 
-    // Navigation clavier
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', function (e) {
       if (e.key === 'ArrowLeft') changeSlide(-1);
       if (e.key === 'ArrowRight') changeSlide(1);
     });
 
-    // Initialisation
     updateUI();
   </script>
 </body>
