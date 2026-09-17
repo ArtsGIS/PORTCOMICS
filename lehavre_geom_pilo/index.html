@@ -266,11 +266,11 @@
       },
       {
         image: "https://artsgis.maps.arcgis.com/sharing/rest/content/items/67fe0ee9bd384157840812f9264efca2/data",
-        caption: "Légende de la troisième image"
+        caption: "En arrière-plan des robots et des oiseaux – Espèces protégées !"
       },
       {
         image: "https://artsgis.maps.arcgis.com/sharing/rest/content/items/d2fe016fdaec438c886ecde2225f0ef3/data",
-        caption: "Légende de la quatrième image"
+        caption: "Est-ce que IRIS 240 transpire ? est-ce qu’elle sent l'odeur de la peur ?"
       }
     ];
     // =======================================================
@@ -290,7 +290,7 @@
     fitViewport();
     window.addEventListener('resize', fitViewport);
     if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', fitViewport);
+      window.visualViewport.addEventListener('resize', fitViewport)
     }
 
     slides.forEach(function (_, index) {
